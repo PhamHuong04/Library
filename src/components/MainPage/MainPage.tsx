@@ -15,15 +15,24 @@ import {
 import { Link } from "react-router-dom";
 import Swal from "sweetalert2";
 import { deleteBook, getListBook } from "../../service/api";
-import { IBook } from "../../lib/interface";
+import { IBook, IUser } from "../../lib/interface";
+import { Header } from "../Header/Header";
+import { getLocalStorage } from "../../lib/utils/local-storage";
 export function Home() {
   const [data, setData] = useState<IBook[]>([]);
+  const [user, setUser] = useState<IUser>({} as IUser);
   const getBook = async () => {
     const books = await getListBook();
     setData(books);
   };
   useEffect(() => {
     getBook();
+  }, []);
+  useEffect(() => {
+    const userData = getLocalStorage("user-data");
+    if (userData) {
+      setUser(JSON.parse(userData));
+    }
   }, []);
   const convertCataloge = (catagory: number) => {
     if (catagory === 0) return "History";
@@ -32,7 +41,7 @@ export function Home() {
     else if (catagory === 3) return "Comic";
     else if (catagory === 4) return "Poem";
     else if (catagory === 5) return "Self help";
-  }
+  };
 
   const onDeleteBook = (book: IBook) => {
     Swal.fire({
@@ -48,14 +57,15 @@ export function Home() {
   };
   return (
     <Box p="20px">
+      <Header user={user} />
       <Typography component="h1" variant="h4" textAlign="center" pb="20px">
         Sách
       </Typography>
-
-      <Link to="/add">
-        <Button variant="contained">Thêm sách mới</Button>
-      </Link>
-
+      {user.id && (
+        <Link to="/add">
+          <Button variant="contained">Thêm sách mới</Button>
+        </Link>
+      )}
       <TableContainer component={Paper} sx={{ mt: "40px" }}>
         <Table sx={{ minWidth: 650 }} aria-label="simple table">
           <TableHead>
@@ -84,22 +94,24 @@ export function Home() {
                   <TableCell align="center">
                     {convertCataloge(book.catagory)}
                   </TableCell>
-                  <TableCell align="center">
-                    <Stack direction="row" gap="6px" justifyContent="center">
-                      <Link to={`/update/${book.bookcode}`}>
-                        <Button variant="contained" color="success">
-                          Edit
+                  {user.id && (
+                    <TableCell align="center">
+                      <Stack direction="row" gap="6px" justifyContent="center">
+                        <Link to={`/update/${book.bookcode}`}>
+                          <Button variant="contained" color="success">
+                            Edit
+                          </Button>
+                        </Link>
+                        <Button
+                          variant="contained"
+                          color="error"
+                          onClick={() => onDeleteBook(book)}
+                        >
+                          Delete
                         </Button>
-                      </Link>
-                      <Button
-                        variant="contained"
-                        color="error"
-                        onClick={() => onDeleteBook(book)}
-                      >
-                        Delete
-                      </Button>
-                    </Stack>
-                  </TableCell>
+                      </Stack>
+                    </TableCell>
+                  )}
                 </TableRow>
               ))}
           </TableBody>

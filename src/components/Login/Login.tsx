@@ -13,6 +13,7 @@ import { toast } from "react-toastify";
 import { useState } from "react";
 import { login } from "../../service/api";
 import { Container, CssBaseline, Grid } from "@mui/material";
+import { setLocalStorage } from "../../lib/utils/local-storage";
 
 const theme = createTheme();
 
@@ -31,8 +32,11 @@ export default function Login() {
     validationSchema: loginFormSchema,
     onSubmit: async (values) => {
       const res = await login(values.email, values.password);
-      if (res){
-        navigate('/');
+
+      if (res) {
+        setLocalStorage("user-data", JSON.stringify(res.user));
+        setLocalStorage("access-token", JSON.stringify(res.accessToken));
+        navigate("/");
       }
     },
   });

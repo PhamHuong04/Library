@@ -23,14 +23,7 @@ export const addBook = async (data: IBook): Promise<IBook> => {
 
 export const editBook = async (id: any, book: IBook) => {
   try {
-    const res = await API.patch(`book/${id}`, {
-      title: book.title,
-      author: book.author,
-      description: book.description,
-      date: book.date,
-      catagory: book.catagory,
-      image: book.image,
-    });
+    const res = await API.patch(`book/${id}`, book);
     return res.data;
   } catch (err) {
     throw new Error("Edit Book failed");
@@ -51,7 +44,8 @@ export const login = async (email: string, password: string) => {
     const res = await API.post(`/auth/signin`, {
       email,
       password,
-    });    
+    });
+ 
     return res.data;
   } catch (err) {
     throw new Error("Login failed");
