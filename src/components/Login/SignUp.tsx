@@ -14,7 +14,7 @@ import {
   Typography,
 } from "@mui/material";
 import LockIcon from "@mui/icons-material/Lock";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { signin } from "../../service/api";
 import { IUser } from "../../lib/interface";
 import "./SignUp.css";
@@ -158,9 +158,13 @@ export default function SignUp() {
               <Grid item xs={12}>
                 <Box className="submit" sx={{ mt: 3, alignItems: "center" }}>
                   <Button type="submit" variant="contained">
-                    Đăng nhập
+                    Đăng ký
                   </Button>
                 </Box>
+              </Grid>
+
+              <Grid item xs={12}>
+                <Link to="/login">Bạn đã có tài khoản? Đăng nhập</Link>
               </Grid>
             </Grid>
           </form>

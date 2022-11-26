@@ -18,6 +18,7 @@ import { deleteBook, getListBook } from "../../service/api";
 import { IBook, IUser } from "../../lib/interface";
 import { Header } from "../Header/Header";
 import { getLocalStorage } from "../../lib/utils/local-storage";
+import { toast } from "react-toastify";
 export function Home() {
   const [data, setData] = useState<IBook[]>([]);
   const [user, setUser] = useState<IUser>({} as IUser);
@@ -27,7 +28,7 @@ export function Home() {
   };
   useEffect(() => {
     getBook();
-  }, []);
+  }, [data]);
   useEffect(() => {
     const userData = getLocalStorage("user-data");
     if (userData) {
@@ -51,6 +52,7 @@ export function Home() {
       confirmButtonText: "Yes",
     }).then((result) => {
       if (result.isConfirmed) {
+        toast.success("Xoá thành công!");
         deleteBook(book.bookcode);
       }
     });
@@ -70,12 +72,26 @@ export function Home() {
         <Table sx={{ minWidth: 650 }} aria-label="simple table">
           <TableHead>
             <TableRow>
-              <TableCell width="200px">STT</TableCell>
-              <TableCell align="center">Tên sách</TableCell>
-              <TableCell align="center">Tác giả</TableCell>
-              <TableCell align="center">Ngày phát hành</TableCell>
-              <TableCell align="center">Thể loại</TableCell>
-              <TableCell align="center">Actions</TableCell>
+              <TableCell width="200px">
+                <strong>STT</strong>
+              </TableCell>
+              <TableCell align="center">
+                <strong>Tên sách</strong>
+              </TableCell>
+              <TableCell align="center">
+                <strong>Tác giả</strong>
+              </TableCell>
+              <TableCell align="center">
+                <strong>Ngày phát hành</strong>
+              </TableCell>
+              <TableCell align="center">
+                <strong>Thể loại</strong>
+              </TableCell>
+              {user.id && (
+                <TableCell align="center">
+                  <strong>Actions</strong>
+                </TableCell>
+              )}
             </TableRow>
           </TableHead>
           <TableBody>
@@ -99,7 +115,7 @@ export function Home() {
                       <Stack direction="row" gap="6px" justifyContent="center">
                         <Link to={`/update/${book.bookcode}`}>
                           <Button variant="contained" color="success">
-                            Edit
+                            View
                           </Button>
                         </Link>
                         <Button

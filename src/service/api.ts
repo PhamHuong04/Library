@@ -1,5 +1,5 @@
 import API from "../lib/axios/axios";
-import { IBook, IUser } from "../lib/interface";
+import { IBook, IImgageBook, IUser } from "../lib/interface";
 
 export const getListBook = async (): Promise<IBook[]> => {
   const res = await API.get("book");
@@ -58,4 +58,14 @@ export const signin = async (data: IUser) => {
   } catch (err) {
     throw new Error("Register failed");
   }
+}
+export const imageBook = async (data: any) => {
+  try {
+    const res = await API.post(`/book/image`, data)
+    return res;
+  }
+  catch (err){
+    throw new Error("Upload failed");
+  }
+
 }

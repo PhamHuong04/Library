@@ -8,7 +8,7 @@ export interface IBook {
   date: string;
   catagory: Catagory;
   numberPage: number;
-  image: string;
+  image ?: IImgageBook;
 }
 export interface IUser {
   id: number;
@@ -18,4 +18,11 @@ export interface IUser {
   email: string;
   password: string;
   roles: string;
+}
+
+export interface IImgageBook {
+  id: string;
+  filename: string;
+  path: string;
+  mimetype: string;
 }

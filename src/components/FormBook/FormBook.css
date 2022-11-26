@@ -4,39 +4,48 @@
     font-weight: bold;
 }
 input[type ="text"],
-select{
+select, textarea{
     width: 100%;
     padding: 12px 20px;
-    margin: 8px 0px;
+    margin: 20px 0px;
     display: inline-block;
     border: 1px solid #ccc;
     border-radius: 4px;
     box-sizing: border-box;
 }
 
+textarea {
+    height: 120px;
+}
+
 input[type ="submit"]{
-    width: 100%;
+    width: 48%;
     background-color: rgb(51, 199, 51);
     color: aliceblue;
     padding: 14px 20px;
-    margin: 8px 0;
+    margin: 20px 0;
     border-radius: 4px;
     cursor: pointer;
 }
 #form { 
-    text-align: center;
     margin: auto;
 }
 
 input[type="date"] {
     width: 100%;
     padding: 12px 20px;
-    margin: 8px 0px;
+    margin: 20px 0px;
     display: inline-block;
     border: 1px solid #ccc;
     border-radius: 4px;
     box-sizing: border-box;
 }
 
+label {
+    font-weight: bold;
+}
 
-
+.title-row {
+    display: flex;
+    justify-content: space-between;
+}

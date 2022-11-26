@@ -1,79 +1,164 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { toast } from "react-toastify";
-import { IBook } from "../../lib/interface";
-import "./FormBook.css";
+import { toast, ToastContainer } from "react-toastify";
 import {
-  addBook,
-  editBook,
-  getListBook,
-  getSingleBook,
-} from "../../service/api";
-import {
+  CssBaseline,
   FormControl,
   Grid,
   InputLabel,
   MenuItem,
   Select,
   Typography,
+  Button,
 } from "@mui/material";
+import { IBook, IImgageBook } from "../../lib/interface";
+import "./FormBook.css";
+import { editBook, getListBook, getSingleBook } from "../../service/api";
+import FileUpload from "../FileUpload/FileUpload";
+import API from "../../lib/axios/axios";
 const initalState: IBook = {
   bookcode: 0,
   title: "",
   author: "",
   description: "",
   catagory: -1,
-  image: "",
   date: "",
   numberPage: 0,
 };
 
 export const FormBook = () => {
   const [state, setState] = useState(initalState);
-  const { title, author, description, date, catagory, image, numberPage } =
-    state;
+  const [imageUrl, setImageUrl] = useState<string>("");
+  const [imgFile, setImgFile] = useState<File | null>(null);
+  const [imageId, setImageId] = React.useState<string>("");
+  const [disabled, setDisabled] = React.useState<boolean>(true);
+  const { title, author, description, date, catagory, numberPage } = state;
 
   const { id } = useParams();
   const getBook = async (bookcode: number) => {
-    const response = await getSingleBook(bookcode);
-    setState(response);
+    const {
+      data: { author, catagory, description, numberPage, date, title, image },
+    }: { data: IBook } = await API.get(`book/${id}`);
+    setState({
+      author,
+      catagory,
+      description,
+      numberPage,
+      date,
+      title,
+      image,
+      bookcode,
+    });
+    if (image) {
+      setImageUrl(image.path);
+      setImageId(image.id);
+    }
   };
 
   useEffect(() => {
     if (id) {
       const idInt = parseInt(id);
       getBook(idInt);
+    } else {
+      setDisabled(false);
     }
   }, [id]);
   let navigate = useNavigate();
 
-  const updateBook = async (data: IBook, id: number) => {
-    const response = await editBook(id, data);
-    if (response) {
-      toast.success("Update successfully!");
-      return navigate("/");
+  const handleAddImage = async (image: File) => {
+    const formdata = new FormData();
+    formdata.append("file", image);
+    try {
+      const { data } = await API.post(`book/image`, formdata);
+
+      return data as IImgageBook;
+    } catch (error: any) {
+      console.log(error);
+
+      if (error.response.status === 413) {
+        toast.error(error.response.data.message);
+      }
     }
   };
+  const addNewItem = async (data: Omit<IBook, "id" | "image">) => {
+    try {
+      let imageBook;
+      if (imgFile !== null) {
+        imageBook = await handleAddImage(imgFile);
+        if (imageBook) {
+          const response = await API.post("book", {
+            ...data,
+            imageId: imageBook.id,
+          });
 
-  const add = async (data: IBook) => {
-    const response = await addBook(data);
-    if (response) {
-      toast.success("Add success!");
-      return navigate("/");
-    } else {
-      toast.warn("Ten nay da ton tai");
+          if (response.status === 201) {
+            toast.success("Thêm sách thành công!");
+            navigate("/");
+          }
+        }
+      } else {
+        const response = await API.post("book", data);
+        if (response.status === 201) {
+          toast.success("Thêm sách thành công !");
+          navigate("/");
+        }
+      }
+    } catch (error: any) {
+      console.log(error);
+    }
+  };
+  const handleUpdateBookWithImage = async (bookId: string, image: File) => {
+    const formdata = new FormData();
+    formdata.append("file", image);
+
+    try {
+      const { data } = await API.post(`book/image/${bookId}`, formdata);
+      return data as IBook;
+    } catch (error: any) {
+      if (error.response.status === 413) {
+        toast.error(error.response.data.message);
+      }
+    }
+  };
+  const updateItem = async (data: Omit<IBook, "id" | "image">) => {
+    try {
+      if (id) {
+        if (imgFile === null) {
+          const response = await API.patch(`book/${id}`, data);
+
+          if (!imageUrl && imageId) {
+            await API.delete(`book/image/${imageId}`);
+          }
+
+          if (response.status === 200) {
+            toast.success("Chỉnh sửa thành công !");
+            navigate("/");
+          }
+        } else {
+          const book = await handleUpdateBookWithImage(id as string, imgFile);
+          if (book) {
+            toast.success("Chỉnh sửa thành công !");
+            navigate("/");
+          }
+        }
+      }
+    } catch (error) {
+      console.log(error);
     }
   };
   const handleSubit = (e: { preventDefault: () => void }) => {
     e.preventDefault();
-    if (!title || !author || !date) toast.error("Vui long dien vao!");
+    if (!title || !author || !date)
+      toast.error("Vui lòng điền vào các trường có đánh dấu *");
     else {
-      if (!id) {
-        add(state);
-      } else {
-        const idInt = parseInt(id);
-        updateBook(state, idInt);
+      if (id) {
+        if (!disabled) {
+          return;
+        }
+        updateItem(state);
         getListBook();
+      } else {
+        addNewItem(state);
       }
     }
   };
@@ -87,10 +172,23 @@ export const FormBook = () => {
     setState({ ...state, [name]: value });
   };
 
-  // const [catagogy, setCatagogy] = React.useState(catagogy);
-  // const handleChange = (event: { target: { value: any } }) => {
-  //   setCatagogy(event.target.value);
-  // };
+  const getImageFile = (file: File | null) => {
+    setImgFile(file);
+    if (file === null) {
+      setImageUrl("");
+    }
+  };
+
+  const handleChangeAction = useCallback(() => {
+    if (id) {
+      if (disabled) {
+        setDisabled(false);
+      } else {
+        setDisabled(true);
+      }
+    }
+  }, [id, disabled]);
+
   return (
     <div style={{ marginTop: "50px" }}>
       <Typography
@@ -100,92 +198,140 @@ export const FormBook = () => {
           textAlign: "center",
         }}
       >
-        {id ? "Chỉnh sửa sách" : "Thêm sách mới"}
+        {id ? "Sách" : "Thêm sách mới"}
       </Typography>
       <form
         style={{
           marginTop: "auto",
           padding: "15px",
-          maxWidth: "800px",
-          alignContent: "center",
+          maxWidth: "1500px",
         }}
         onSubmit={handleSubit}
         id="form"
       >
-        <Grid container spacing={3}>
+        <Grid container spacing={10}>
           <Grid item xs={6}>
-            <label htmlFor="title">Tiêu đề</label>
-            <input
-              type="text"
-              id="title"
-              name="title"
-              onChange={handleInput}
-              value={title}
-            />
+            <div className="title-row">
+              <Grid item xs={5}>
+                <label htmlFor="title">Tiêu đề *</label>
+                <input
+                  type="text"
+                  id="title"
+                  name="title"
+                  onChange={handleInput}
+                  value={title}
+                  disabled={disabled}
+                />
+              </Grid>
+              <Grid item xs={5}>
+                <label htmlFor="author">Tác giả *</label>
+                <input
+                  type="text"
+                  id="author"
+                  name="author"
+                  onChange={handleInput}
+                  value={author}
+                  disabled={disabled}
+                />
+              </Grid>
+            </div>
+            <Grid item xs={12}>
+              <label htmlFor="description">Mô tả về sách</label>
+              <textarea
+                id="description"
+                name="description"
+                onChange={handleInput}
+                value={description}
+                disabled={disabled}
+              />
+            </Grid>
+            <div className="title-row">
+              <Grid item xs={5}>
+                <label htmlFor="date" className="date">
+                  Ngày phát hành *
+                </label>
+                <input
+                  type="date"
+                  id="date"
+                  name="date"
+                  onChange={handleInput}
+                  value={date}
+                  disabled={disabled}
+                />
+              </Grid>
+              <Grid item xs={5}>
+                <label htmlFor="numberPage">Số trang</label>
+                <input
+                  type="text"
+                  id="numberPage"
+                  name="numberPage"
+                  onChange={handleInput}
+                  value={numberPage}
+                  disabled={disabled}
+                />
+              </Grid>
+            </div>
+            <Grid item xs={5}>
+              <FormControl fullWidth>
+                <InputLabel id="catagory">Thể loại</InputLabel>
+                <Select
+                  labelId="catagory"
+                  id="catagory"
+                  name="catagory"
+                  value={catagory}
+                  label="Cataloge"
+                  onChange={handleChange}
+                  disabled={disabled}
+                >
+                  <MenuItem value={0}>History</MenuItem>
+                  <MenuItem value={1}>Textbook</MenuItem>
+                  <MenuItem value={2}>Novel</MenuItem>
+                  <MenuItem value={3}>Comic</MenuItem>
+                  <MenuItem value={4}>Poem</MenuItem>
+                  <MenuItem value={5}>Self-help</MenuItem>
+                </Select>
+              </FormControl>
+            </Grid>
           </Grid>
-          <Grid item xs={6}>
-            <label htmlFor="author">Tác giả</label>
-            <input
-              type="text"
-              id="author"
-              name="author"
-              onChange={handleInput}
-              value={author}
+          <Grid item xs={6} justifyContent="center" paddingLeft={2}>
+            <Typography
+              component="h1"
+              variant="h5"
+              marginBottom={2}
+              color="GrayText"
+            >
+              Tải ảnh
+            </Typography>
+
+            <FileUpload
+              url={imageUrl}
+              getImageItem={getImageFile}
+              disabled={disabled}
             />
-          </Grid>
-          <Grid item xs={12}>
-            <label htmlFor="description">Mô tả về sách</label>
-            <input
-              type="text"
-              id="description"
-              name="description"
-              onChange={handleInput}
-              value={description}
-            />
-          </Grid>
-          <Grid item xs={6}>
-            <label htmlFor="date">Ngày phát hành</label>
-            <input
-              type="date"
-              id="date"
-              name="date"
-              onChange={handleInput}
-              value={date}
-            />
-          </Grid>
-          <Grid item xs={6}>
-            <label htmlFor="numberPage">Số trang</label>
-            <input
-              type="text"
-              id="numberPage"
-              name="numberPage"
-              onChange={handleInput}
-              value={numberPage}
-            />
-          </Grid>
-          <Grid item xs={6}>
-            <FormControl fullWidth>
-              <InputLabel id="catagory">Thể loại</InputLabel>
-              <Select
-                labelId="demo-simple-select-label"
-                id="catagory"
-                name="catagory"
-                value={catagory}
-                label="Cataloge"
-                onChange={handleChange}
-              >
-                <MenuItem value={0}>History</MenuItem>
-                <MenuItem value={1}>Textbook</MenuItem>
-                <MenuItem value={2}>Novel</MenuItem>
-                <MenuItem value={3}>Comic</MenuItem>
-                <MenuItem value={4}>Poem</MenuItem>
-                <MenuItem value={5}>Self-help</MenuItem>
-              </Select>
-            </FormControl>
           </Grid>
         </Grid>
-        <input type="submit" value={"Lưu"} />
+
+        <CssBaseline />
+        <Button
+          variant="outlined"
+          type="submit"
+          sx={{ marginTop: "100px", width: "700px", fontWeight: "bold" }}
+          onClick={handleChangeAction}
+        >
+          {id ? (disabled ? "Chỉnh sửa" : "Lưu") : "Thêm sách"}
+        </Button>
       </form>
+      <ToastContainer
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+      />
     </div>
   );
 };

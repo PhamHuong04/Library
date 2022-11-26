@@ -65,7 +65,7 @@ export default function Login() {
           >
             <Grid container spacing={2}>
               <Grid item xs={12}>
-                <Box className="inputGr" sx={{ mt: 3 }}>
+                <Box sx={{ mt: 3 }}>
                   <TextField
                     name="email"
                     label="Email"
@@ -78,7 +78,7 @@ export default function Login() {
                 </Box>
               </Grid>
               <Grid item xs={12}>
-                <Box className="inputGr" sx={{ mt: 3 }}>
+                <Box sx={{ mt: 3 }}>
                   <TextField
                     name="password"
                     type="password"
