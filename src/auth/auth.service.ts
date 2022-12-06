@@ -16,9 +16,7 @@ export class AuthService {
     @Inject(AuthHelper)
     private readonly helper: AuthHelper,
   ) {}
-  async login(
-    authCredentialDto: AuthCredentialDto,
-  ): Promise<{ accessToken: string }> {
+  async login(authCredentialDto: AuthCredentialDto) {
     const { email, password } = authCredentialDto;
 
     const user = await this.userRepository.findOne({ where: { email } });
@@ -38,7 +36,7 @@ export class AuthService {
     if (user && isPasswordValid) {
       const payload: JwtPayload = { id: user.id };
       const accessToken: string = await this.jwtService.sign(payload);
-      return { accessToken };
+      return { accessToken, user };
     }
   }
 }

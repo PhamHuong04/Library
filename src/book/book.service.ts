@@ -6,12 +6,15 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
-import { ImageService } from 'src/image/image.service';
+import { ImageController } from 'src/image/image.controller';
 import { Repository } from 'typeorm';
 import { CreateBookDto } from './dto/create-book.dto';
+import { CreateLocalFileDto } from './dto/create-local-file';
 import { UpdateBookDto } from './dto/update-book.dto';
 import { Book } from './entities/book.entity';
+import { LocalFile } from './entities/local-file.entity';
 
 @Injectable()
 export class BookService {
@@ -19,8 +22,13 @@ export class BookService {
     @InjectRepository(Book)
     private readonly bookRepository: Repository<Book>,
 
-    @Inject(forwardRef(() => ImageService))
-    private cartService: ImageService,
+    @InjectRepository(LocalFile)
+    private readonly localFileRepository: Repository<LocalFile>,
+
+    private configService: ConfigService,
+
+    @Inject(forwardRef(() => ImageController))
+    private imageController: ImageController,
   ) {}
   async create(createBookDto: CreateBookDto) {
     return await this.bookRepository.save(createBookDto);
@@ -58,5 +66,35 @@ export class BookService {
     return {
       message: 'Delete successfully',
     };
+  }
+
+  async createLocalFile(creareFileDataDto: CreateLocalFileDto) {
+    const urlServer = this.configService.get<string>('URL_SERVER');
+    creareFileDataDto.path = urlServer + creareFileDataDto.path;
+    const localFile = await this.localFileRepository.create(creareFileDataDto);
+    return await this.localFileRepository.save(localFile);
+  }
+  async addImg(bookId: number, creareFileDataDto: CreateLocalFileDto) {
+    const image = await this.createLocalFile(creareFileDataDto);
+    const book = await this.bookRepository.preload({
+      bookcode: bookId,
+      image: {
+        id: image.id,
+      },
+    });
+    return await this.bookRepository.save(book);
+  }
+
+  async removeImgInBook(bookId: number) {
+    const book = await this.bookRepository.preload({
+      bookcode: bookId,
+      image: null,
+    });
+    return await this.bookRepository.save(book);
+  }
+
+  async deleteLocalFile(id: string) {
+    const deleteResult = await this.localFileRepository.delete(id);
+    return deleteResult;
   }
 }

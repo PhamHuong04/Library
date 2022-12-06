@@ -10,9 +10,6 @@ export class ImageService {
     private readonly imageRepository: Repository<Image>,
   ) {}
 
-  async saveUrl(file_url: string) {
-    await this.imageRepository.save({ image_url: file_url });
-  }
   async getImages(): Promise<Image[]> {
     return this.imageRepository.find();
   }

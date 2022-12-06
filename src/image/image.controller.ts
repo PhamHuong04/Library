@@ -7,17 +7,20 @@ import {
   Get,
   Param,
   Res,
+  Body,
 } from '@nestjs/common';
 import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { diskStorage } from 'multer';
+import { ApiTags } from '@nestjs/swagger';
 import { Image } from './entities/image.entity';
 import {
   editFileName,
   imageFileFilter,
 } from 'src/common/utils/file-upload.utils';
 
+@ApiTags('Image')
 @Controller('image')
 export class ImageController {
   constructor(
@@ -40,21 +43,16 @@ export class ImageController {
       fileFilter: imageFileFilter,
     }),
   )
-  async uploadedFile(@UploadedFile() file) {
+  async uploadedFile(@UploadedFile() file: Express.Multer.File) {
     const response = {
       originalname: file.originalname,
       filename: file.filename,
     };
-    return response;
+    return this.imageRepository.save(response);
   }
 
   @Get(':imgpath')
   seeUploadedFile(@Param('imgpath') image, @Res() res) {
     return res.sendFile(image, { root: './files' });
-  }
-  @Post('uploads')
-  @UseInterceptors(FilesInterceptor('photos[]', 10, { dest: './uploads' }))
-  uploadMultiple(@UploadedFiles() files) {
-    console.log(files);
   }
 }

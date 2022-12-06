@@ -9,12 +9,13 @@ import { ImageController } from './image.controller';
 import { AbilityModule } from 'src/ability/ability.module';
 import { UserModule } from 'src/user/user.module';
 import { Image } from './entities/image.entity';
+import { BookModule } from 'src/book/book.module';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([Image]),
     AbilityModule,
-    forwardRef(() => UserModule),
+    forwardRef(() => BookModule),
     MulterModule.register({
       dest: './files',
     }),
@@ -23,7 +24,7 @@ import { Image } from './entities/image.entity';
     // }),
   ],
   controllers: [ImageController],
-  providers: [ImageService],
-  exports: [ImageService],
+  providers: [ImageService, ImageController],
+  exports: [ImageService, ImageController],
 })
 export class ImageModule {}

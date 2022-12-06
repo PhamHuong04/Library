@@ -7,6 +7,7 @@ import {
 } from 'typeorm';
 import { Catagory } from 'src/common/enum/type.enum';
 import { Image } from 'src/image/entities/image.entity';
+import { LocalFile } from './local-file.entity';
 @Entity()
 export class Book {
   @PrimaryGeneratedColumn()
@@ -30,7 +31,11 @@ export class Book {
   @Column()
   numberPage: number;
 
-  @OneToOne(() => Image)
+  @OneToOne(() => LocalFile, (localFile) => localFile.id, {
+    nullable: true,
+    eager: true,
+    onDelete: 'SET NULL',
+  })
   @JoinColumn()
-  image: Image;
+  image: LocalFile;
 }

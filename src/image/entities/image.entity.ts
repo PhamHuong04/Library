@@ -6,5 +6,5 @@ export class Image {
   id: number;
 
   @Column()
-  image_url: string;
+  filename: string;
 }
