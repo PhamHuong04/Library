@@ -34,4 +34,9 @@ export class CreateBookDto {
   @IsOptional()
   @ApiProperty({ required: false })
   imageId: string;
+
+  @IsOptional()
+  @ApiProperty({ required: false })
+  image_url: Express.Multer.File;
+  // price: number;
 }

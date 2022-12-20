@@ -19,9 +19,6 @@ import { BookModule } from 'src/book/book.module';
     MulterModule.register({
       dest: './files',
     }),
-    // ServeStaticModule.forRoot({
-    //   rootPath: join(__dirname, '..', 'files'),
-    // }),
   ],
   controllers: [ImageController],
   providers: [ImageService, ImageController],

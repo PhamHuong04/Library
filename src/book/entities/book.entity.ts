@@ -31,6 +31,11 @@ export class Book {
   @Column()
   numberPage: number;
 
+  @Column({ default: 25000 })
+  price: number;
+
+  image_url: Express.Multer.File;
+
   @OneToOne(() => LocalFile, (localFile) => localFile.id, {
     nullable: true,
     eager: true,

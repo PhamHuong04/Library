@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   forwardRef,
   HttpException,
   HttpStatus,
@@ -8,6 +9,7 @@ import {
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
+import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
 import { ImageController } from 'src/image/image.controller';
 import { Repository } from 'typeorm';
 import { CreateBookDto } from './dto/create-book.dto';
@@ -29,8 +31,16 @@ export class BookService {
 
     @Inject(forwardRef(() => ImageController))
     private imageController: ImageController,
+
+    @Inject(forwardRef(() => CloudinaryService))
+    private cloudinary: CloudinaryService,
   ) {}
+
   async create(createBookDto: CreateBookDto) {
+    if (createBookDto.image_url) {
+      const imageUrl = await this.cloudinary.uploadImage( createBookDto.image_url);
+      createBookDto.image_url = imageUrl.url;
+    }
     return await this.bookRepository.save(createBookDto);
   }
 
@@ -74,6 +84,7 @@ export class BookService {
     const localFile = await this.localFileRepository.create(creareFileDataDto);
     return await this.localFileRepository.save(localFile);
   }
+
   async addImg(bookId: number, creareFileDataDto: CreateLocalFileDto) {
     const image = await this.createLocalFile(creareFileDataDto);
     const book = await this.bookRepository.preload({
@@ -96,5 +107,11 @@ export class BookService {
   async deleteLocalFile(id: string) {
     const deleteResult = await this.localFileRepository.delete(id);
     return deleteResult;
+  }
+
+  async uploadImageToCloudinary(file: Express.Multer.File) {
+    return await this.cloudinary.uploadImage(file).catch(() => {
+      throw new BadRequestException('Invalid file type.');
+    });
   }
 }

@@ -1,7 +1,7 @@
 import { Module, ValidationPipe } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
-import { APP_FILTER, APP_PIPE } from '@nestjs/core';
+import { APP_FILTER, APP_GUARD, APP_PIPE } from '@nestjs/core';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { configEnvPath } from './common/helper/env.helper';
@@ -11,11 +11,14 @@ import { BookModule } from './book/book.module';
 import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
 import { ImageModule } from './image/image.module';
+import { CloudinaryModule } from './cloudinary/cloudinary.module';
+import { JwtAuthGuard } from './auth/jwt-auth.guard';
 
 @Module({
   imports: [
     ConfigModule.forRoot(configEnvPath),
     TypeOrmModule.forRootAsync({ useClass: TypeOrmConfigSerivce }),
+    CloudinaryModule,
     BookModule,
     UserModule,
     AuthModule,
