@@ -14,7 +14,7 @@ const HomePage: React.FC<Props> = ({ children }) => {
   const products = useAppSelector(selectProducts);
   
   useEffect(() => {
-    dispatch(getAllProduct({ limit: 10, offset: null }));
+    dispatch(getAllProduct());
   }, [dispatch]);  
 
   return (

@@ -25,12 +25,12 @@ const FilterPrice: React.FC<Props> = () => {
           data-toggle="collapse"
           data-target="#collapse_3"
           aria-expanded="true"
-          className=""
+          className="text-success"
           onClick={(e) => handleToggle(e)}
           onBlur={(e) => closeToggle(e)}
         >
           <i className="icon-control fa fa-chevron-down"></i>
-          <h6 className="title">Price range </h6>
+          <h6 className="title text-success">Price range </h6>
         </a>
       </header>
       {toggle && (
@@ -58,7 +58,7 @@ const FilterPrice: React.FC<Props> = () => {
                 </select>
               </div>
             </div>
-            <button className="btn btn-block btn-primary">Apply</button>
+            <button className="btn btn-block btn-success">Apply</button>
           </div>
         </div>
       )}

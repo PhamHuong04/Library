@@ -1,8 +1,12 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import { useAppSelector } from "../../hooks/redux-hook";
+import { selectCurrentUser } from "../../store/user/user";
 import { IBook } from "../../utils/interfaces";
 
+
 const ProductCardComponent: React.FC<IBook> = (product) => {
+  const currentUser = useAppSelector(selectCurrentUser);
   return (
     <div className="col-md-4">
       <figure className="card card-product-grid">
@@ -25,6 +29,21 @@ const ProductCardComponent: React.FC<IBook> = (product) => {
               <span className="price">${product.price}</span>
             </div>
           </div>
+
+          {currentUser?.roles === "admin" && (
+            <div className="admin">
+              <div className="d-flex justify-content-between">
+                <button type="button" className="btn  btn-success">
+                  <span className="text">Edit</span>
+                  <i className="far fa-edit"></i>
+                </button>
+                <Link to={`/cart`} className={"btn btn-danger"}>
+                  <span className="text">Delete</span>
+                  <i className="fas fa-trash"></i>
+                </Link>
+              </div>
+            </div>
+          )}
         </figcaption>
       </figure>
     </div>

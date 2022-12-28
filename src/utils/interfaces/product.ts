@@ -5,12 +5,23 @@ export interface IBook {
   author: string;
   description: string;
   date: string;
-  catagory: string;
+  catagory: number;
   numberPage: number;
   price: number;
-  image: {
-    id: number;
-    path: string;
-  };
+  image?: IImgageBook;
+}
+export interface IImgageBook {
+  id: string;
+  path: string;
+  url: string;
 }
 
+
+export enum Catagory {
+  HISTORY,
+  TEXTBOOK,
+  NOVEL,
+  COMIC,
+  POEM,
+  SELFHELP,
+}

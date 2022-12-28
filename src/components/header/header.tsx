@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Link, useNavigate, createSearchParams } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { useAppSelector } from "../../hooks/redux-selector";
 import { selectTotalItem } from "../../store/cart/cart";
 import LogoPng from "../../assets/images/lg.png";
@@ -14,9 +14,8 @@ const HeaderComponent: React.FC<Props> = () => {
   const dispatch = useAppDispatch();
   const keyword = useAppSelector(selectProductSearch);
   const currentUser = useAppSelector(selectCurrentUser);
-  
+
   const totalItem = useAppSelector(selectTotalItem);
-  const navigate = useNavigate();
 
   const onChangeKeyword = (e: React.FormEvent<HTMLInputElement>) => {
     const value = (e.target as HTMLInputElement).value;
@@ -35,13 +34,6 @@ const HeaderComponent: React.FC<Props> = () => {
   const closeDropdown = () => {
     setToggleDropdown(false);
   };
-
-  // const searchProduct = () => {
-  //   navigate({
-  //     pathname: "/shop",
-  //     search: createSearchParams({ keyword }).toString(),
-  //   });
-  // };
 
   return (
     <header className="section-header">
@@ -89,7 +81,7 @@ const HeaderComponent: React.FC<Props> = () => {
               <div className="category-wrap dropdown d-inline-block float-right">
                 <button
                   type="button"
-                  className="btn btn-primary dropdown-toggle"
+                  className="btn btn-success dropdown-toggle"
                   data-toggle="dropdown"
                   onBlur={closeDropdown}
                   onClick={handleDropdownClick}
@@ -112,16 +104,16 @@ const HeaderComponent: React.FC<Props> = () => {
                 </div>
               </div>
             </div>
-            <Link to="/shop" className="btn btn-outline-primary">
+            <Link to="/shop" className="btn btn-outline-success">
               Store
             </Link>
             <div className="col-lg  col-md-6 col-sm-12 col">
               <form action="#" className="search">
-                <div className="input-group w-100">
+                <div className="input-group w-100 align-items-center">
                   <input
                     type="text"
-                    className="form-control"
-                    style={{ width: "60%" }}
+                    className="form-control align-items-center"
+                    style={{ width: "60%", marginTop: "0px"}}
                     placeholder="Search"
                     defaultValue={keyword}
                     onChange={(e) => onChangeKeyword(e)}
@@ -129,7 +121,7 @@ const HeaderComponent: React.FC<Props> = () => {
                   <div className="input-group-append">
                     <Link
                       to={`/shop?keyword=${keyword}`}
-                      className="btn btn-primary"
+                      className="btn btn-success"
                     >
                       <i className="fa fa-search"></i>
                     </Link>
@@ -140,8 +132,8 @@ const HeaderComponent: React.FC<Props> = () => {
             <div className="col-lg-3 col-sm-6 col-8 order-2 order-lg-3">
               <div className="d-flex justify-content-end mb-3 mb-lg-0">
                 <div className="widget-header">
-                  <small className="title text-info">
-                    Welcome {currentUser?.username || "gues"}!
+                  <small className="title text-success">
+                    <b>Welcome {currentUser?.username || "gues"}!</b>
                   </small>
                   {!currentUser ? (
                     <div>

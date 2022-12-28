@@ -75,7 +75,7 @@ const SignInPage: React.FC<Props> = ({ children }) => {
                 <button
                   type="button"
                   onClick={(e) => onLoginIn()}
-                  className="btn btn-primary btn-block"
+                  className="btn btn-success btn-block"
                 >
                   Login
                 </button>

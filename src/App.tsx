@@ -1,10 +1,12 @@
 import React, { useEffect } from "react";
 import { Route, Routes } from "react-router-dom";
+import "bootstrap/dist/css/bootstrap.min.css";
 import FooterComponent from "./components/footer/footer";
 import { useAppDispatch } from "./hooks/redux-hook";
 import MainLayout from "./pages/layout/layout";
 import { initialCartItems } from "./store/cart";
-import "bootstrap/dist/css/bootstrap.min.css";
+import "react-toastify/dist/ReactToastify.css";
+import { FormBook } from "./pages/form-book/FormBook";
 
 const CartPage = React.lazy(() => import("./pages/cart/cart"));
 const HomePage = React.lazy(() => import("./pages/home/home"));
@@ -38,6 +40,13 @@ function App() {
             <StorePage>
               <FooterComponent />
             </StorePage>
+          }
+        ></Route>
+
+        <Route
+          path="/add"
+          element={
+            <FormBook />
           }
         ></Route>
         <Route

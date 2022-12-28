@@ -4,7 +4,9 @@ const StoreBannerComponent: React.FC = () => {
   return (
     <section className="section-pagetop bg">
       <div className="container">
-        <h2 className="title-page">Our Store</h2>
+        <button className="btn btn-success" style={{marginBottom: "20px"}}>Add new book</button>
+        <h2 className="title-page text-success">Our Store</h2>
+        
       </div>
     </section>
   );

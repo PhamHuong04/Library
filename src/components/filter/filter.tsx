@@ -8,7 +8,6 @@ const FilterComponent: React.FC<Props> = () => {
   return (
     <aside className="col-md-3">
       <div className="card">
-        {/* <FilterCategory /> */}
         <FilterPrice />
       </div>
     </aside>

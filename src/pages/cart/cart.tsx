@@ -69,7 +69,7 @@ const CartPage: React.FC = () => {
                   </p>
                   <a
                     href="./place-order.html"
-                    className="btn btn-primary btn-block"
+                    className="btn btn-success btn-block"
                   >
                     Checkout
                   </a>

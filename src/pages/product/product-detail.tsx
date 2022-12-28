@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../../hooks/redux-hook";
 import { getProduct, selectProductDetail } from "../../store/product";
@@ -13,12 +13,6 @@ const ProductDetailPage: React.FC<Props> = () => {
   const dispatch = useAppDispatch();
 
   const product = useAppSelector(selectProductDetail);
-
-  const colors = ["Sliver", "Gray", "Gold", "Black"];
-
-  const [size, setSize] = useState<string>("M");
-  const [color, setColor] = useState<string>(colors[0]);
-
   const addToCart = () => {
     product && dispatch(addItemToCart({ product }));
   };
@@ -64,7 +58,6 @@ const ProductDetailPage: React.FC<Props> = () => {
                       <i className="fas fa-eye"></i>
                     </Link>
                   </div>
-               
               </article>
             </main>
           </div>
