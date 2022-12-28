@@ -4,10 +4,12 @@ import {
   Column,
   OneToOne,
   JoinColumn,
+  OneToMany,
 } from 'typeorm';
 import { Catagory } from 'src/common/enum/type.enum';
 import { Image } from 'src/image/entities/image.entity';
 import { LocalFile } from './local-file.entity';
+import { Comment } from 'src/comment/entities/comment.entity';
 @Entity()
 export class Book {
   @PrimaryGeneratedColumn()
@@ -43,4 +45,9 @@ export class Book {
   })
   @JoinColumn()
   image: LocalFile;
+
+  @OneToMany(() => Comment, (comment) => comment.book, {
+    eager: true,
+  })
+  comments: Comment[];
 }

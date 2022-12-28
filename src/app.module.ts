@@ -12,7 +12,8 @@ import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
 import { ImageModule } from './image/image.module';
 import { CloudinaryModule } from './cloudinary/cloudinary.module';
-import { JwtAuthGuard } from './auth/jwt-auth.guard';
+import { CommentModule } from './comment/comment.module';
+import { OrderModule } from './order/order.module';
 
 @Module({
   imports: [
@@ -23,6 +24,8 @@ import { JwtAuthGuard } from './auth/jwt-auth.guard';
     UserModule,
     AuthModule,
     ImageModule,
+    CommentModule,
+    OrderModule,
   ],
   controllers: [AppController],
   providers: [

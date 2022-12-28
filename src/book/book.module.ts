@@ -6,10 +6,11 @@ import { BookController } from './book.controller';
 import { ImageModule } from 'src/image/image.module';
 import { LocalFile } from './entities/local-file.entity';
 import { CloudinaryModule } from 'src/cloudinary/cloudinary.module';
+import { Comment } from 'src/comment/entities/comment.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Book, LocalFile]),
+    TypeOrmModule.forFeature([Book, LocalFile, Comment]),
     ImageModule,
     forwardRef(() => ImageModule),
     CloudinaryModule,
