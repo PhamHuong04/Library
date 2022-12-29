@@ -8,6 +8,7 @@ export interface IBook {
   date: string;
   catagory: Catagory;
   numberPage: number;
+  price: number;
   image ?: IImgageBook;
 }
 export interface IUser {

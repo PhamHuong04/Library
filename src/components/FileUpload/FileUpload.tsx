@@ -15,7 +15,7 @@ interface FileUploadProps {
 
 function FileUpload({
   accept = "image/*",
-  labelText = "Chọn tệp",
+  labelText = "Select file",
   url,
   getImageItem,
   disabled,

@@ -24,6 +24,7 @@ const initalState: IBook = {
   catagory: -1,
   date: "",
   numberPage: 0,
+  price: 0,
 };
 
 export const FormBook = () => {
@@ -32,12 +33,12 @@ export const FormBook = () => {
   const [imgFile, setImgFile] = useState<File | null>(null);
   const [imageId, setImageId] = React.useState<string>("");
   const [disabled, setDisabled] = React.useState<boolean>(true);
-  const { title, author, description, date, catagory, numberPage } = state;
+  const { title, author, description, date, catagory, numberPage, price } = state;
 
   const { id } = useParams();
   const getBook = async (bookcode: number) => {
     const {
-      data: { author, catagory, description, numberPage, date, title, image },
+      data: { author, catagory, description, numberPage, date, title, image, price },
     }: { data: IBook } = await API.get(`book/${id}`);
     setState({
       author,
@@ -48,6 +49,7 @@ export const FormBook = () => {
       title,
       image,
       bookcode,
+      price,
     });
     if (image) {
       setImageUrl(image.path);
@@ -196,9 +198,10 @@ export const FormBook = () => {
           fontWeight: "bold",
           fontSize: "40px",
           textAlign: "center",
+          color: "green",
         }}
       >
-        {id ? "Sách" : "Thêm sách mới"}
+        {id ? "Book" : "Add new book"}
       </Typography>
       <form
         style={{
@@ -213,7 +216,9 @@ export const FormBook = () => {
           <Grid item xs={6}>
             <div className="title-row">
               <Grid item xs={5}>
-                <label htmlFor="title">Tiêu đề *</label>
+                <label htmlFor="title" className="title-form">
+                  Title *
+                </label>
                 <input
                   type="text"
                   id="title"
@@ -224,7 +229,9 @@ export const FormBook = () => {
                 />
               </Grid>
               <Grid item xs={5}>
-                <label htmlFor="author">Tác giả *</label>
+                <label htmlFor="author" className="title-form">
+                  Author *
+                </label>
                 <input
                   type="text"
                   id="author"
@@ -236,7 +243,9 @@ export const FormBook = () => {
               </Grid>
             </div>
             <Grid item xs={12}>
-              <label htmlFor="description">Mô tả về sách</label>
+              <label htmlFor="description" className="title-form title-row">
+                Description
+              </label>
               <textarea
                 id="description"
                 name="description"
@@ -247,8 +256,8 @@ export const FormBook = () => {
             </Grid>
             <div className="title-row">
               <Grid item xs={5}>
-                <label htmlFor="date" className="date">
-                  Ngày phát hành *
+                <label htmlFor="date" className="date title-form">
+                  Date *
                 </label>
                 <input
                   type="date"
@@ -260,7 +269,9 @@ export const FormBook = () => {
                 />
               </Grid>
               <Grid item xs={5}>
-                <label htmlFor="numberPage">Số trang</label>
+                <label htmlFor="numberPage" className="title-form">
+                  Page Number
+                </label>
                 <input
                   type="text"
                   id="numberPage"
@@ -271,27 +282,42 @@ export const FormBook = () => {
                 />
               </Grid>
             </div>
-            <Grid item xs={5}>
-              <FormControl fullWidth>
-                <InputLabel id="catagory">Thể loại</InputLabel>
-                <Select
-                  labelId="catagory"
-                  id="catagory"
-                  name="catagory"
-                  value={catagory}
-                  label="Cataloge"
-                  onChange={handleChange}
+            <div className="title-row">
+              <Grid item xs={5}>
+                <FormControl fullWidth>
+                  <InputLabel id="catagory">Thể loại</InputLabel>
+                  <Select
+                    labelId="catagory"
+                    id="catagory"
+                    name="catagory"
+                    value={catagory}
+                    label="Cataloge"
+                    onChange={handleChange}
+                    disabled={disabled}
+                  >
+                    <MenuItem value={0}>History</MenuItem>
+                    <MenuItem value={1}>Textbook</MenuItem>
+                    <MenuItem value={2}>Novel</MenuItem>
+                    <MenuItem value={3}>Comic</MenuItem>
+                    <MenuItem value={4}>Poem</MenuItem>
+                    <MenuItem value={5}>Self-help</MenuItem>
+                  </Select>
+                </FormControl>
+              </Grid>
+              <Grid item xs={5}>
+                <label htmlFor="price" className="price">
+                  Price
+                </label>
+                <input
+                  type="text"
+                  id="price"
+                  name="price"
+                  onChange={handleInput}
+                  value={price}
                   disabled={disabled}
-                >
-                  <MenuItem value={0}>History</MenuItem>
-                  <MenuItem value={1}>Textbook</MenuItem>
-                  <MenuItem value={2}>Novel</MenuItem>
-                  <MenuItem value={3}>Comic</MenuItem>
-                  <MenuItem value={4}>Poem</MenuItem>
-                  <MenuItem value={5}>Self-help</MenuItem>
-                </Select>
-              </FormControl>
-            </Grid>
+                />
+              </Grid>
+            </div>
           </Grid>
           <Grid item xs={6} justifyContent="center" paddingLeft={2}>
             <Typography
@@ -300,7 +326,7 @@ export const FormBook = () => {
               marginBottom={2}
               color="GrayText"
             >
-              Tải ảnh
+              Upload Image
             </Typography>
 
             <FileUpload
@@ -318,7 +344,7 @@ export const FormBook = () => {
           sx={{ marginTop: "100px", width: "700px", fontWeight: "bold" }}
           onClick={handleChangeAction}
         >
-          {id ? (disabled ? "Chỉnh sửa" : "Lưu") : "Thêm sách"}
+          {id ? (disabled ? "Edit" : "Save") : "Add Book"}
         </Button>
       </form>
       <ToastContainer

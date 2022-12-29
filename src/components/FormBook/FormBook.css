@@ -7,7 +7,7 @@ input[type ="text"],
 select, textarea{
     width: 100%;
     padding: 12px 20px;
-    margin: 20px 0px;
+    margin: 0px 0px;
     display: inline-block;
     border: 1px solid #ccc;
     border-radius: 4px;
@@ -34,7 +34,6 @@ input[type ="submit"]{
 input[type="date"] {
     width: 100%;
     padding: 12px 20px;
-    margin: 20px 0px;
     display: inline-block;
     border: 1px solid #ccc;
     border-radius: 4px;
@@ -48,4 +47,7 @@ label {
 .title-row {
     display: flex;
     justify-content: space-between;
+    margin-top: 30px;
 }
+
+
