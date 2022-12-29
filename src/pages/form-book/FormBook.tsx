@@ -23,7 +23,7 @@ const initalState: IBook = {
   catagory: -1,
   date: "",
   numberPage: 0,
-  price:0,
+  price: 0,
 };
 
 export const FormBook = () => {
@@ -32,12 +32,22 @@ export const FormBook = () => {
   const [imgFile, setImgFile] = useState<File | null>(null);
   const [imageId, setImageId] = React.useState<string>("");
   const [disabled, setDisabled] = React.useState<boolean>(true);
-  const { title, author, description, date, catagory, numberPage, price } = state;
+  const { title, author, description, date, catagory, numberPage, price } =
+    state;
 
   const { id } = useParams();
   const getBook = async (bookcode: number) => {
     const {
-      data: { author, catagory, description, numberPage, date, title, image, price },
+      data: {
+        author,
+        catagory,
+        description,
+        numberPage,
+        date,
+        title,
+        image,
+        price,
+      },
     }: { data: IBook } = await axiosInstance.get(`book/${id}`);
     setState({
       author,
@@ -48,7 +58,7 @@ export const FormBook = () => {
       title,
       image,
       bookcode,
-      price
+      price,
     });
     if (image) {
       setImageUrl(image.path);
@@ -113,7 +123,10 @@ export const FormBook = () => {
     formdata.append("file", image);
 
     try {
-      const { data } = await axiosInstance.post(`book/image/${bookId}`, formdata);
+      const { data } = await axiosInstance.post(
+        `book/image/${bookId}`,
+        formdata
+      );
       return data as IBook;
     } catch (error: any) {
       if (error.response.status === 413) {
@@ -214,7 +227,7 @@ export const FormBook = () => {
           <Grid item xs={6}>
             <div className="title-row">
               <Grid item xs={5}>
-                <label htmlFor="title">Tiele*</label>
+                <label htmlFor="title">Title*</label>
                 <input
                   type="text"
                   id="title"

@@ -3,6 +3,7 @@ import productReducer from "./product/product";
 import cartReducer from "./cart/cart";
 // import categoryReducer from "./category/category";
 import userReducer from "./user/user";
+import commentReducer from "./comment/comment";
 
 export const store = configureStore({
   reducer: {
@@ -10,6 +11,7 @@ export const store = configureStore({
     cart: cartReducer,
     // category: categoryReducer,
     user: userReducer,
+    comment: commentReducer,
   },
 });
 export type RootState = ReturnType<typeof store.getState>;

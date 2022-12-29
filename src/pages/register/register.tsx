@@ -195,7 +195,7 @@ const RegisterPage: React.FC<Props> = ({ children }) => {
                 <button
                   type="submit"
                   onClick={submitForm}
-                  className="btn btn-primary btn-block"
+                  className="btn btn-success btn-block"
                 >
                   Register
                 </button>

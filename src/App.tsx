@@ -42,13 +42,9 @@ function App() {
             </StorePage>
           }
         ></Route>
-
-        <Route
-          path="/add"
-          element={
-            <FormBook />
-          }
-        ></Route>
+        <Route path="/add" element={<FormBook />}></Route>
+        <Route path="/update/:id" element={<FormBook />}></Route>
+        <Route path="/add" element={<FormBook />}></Route>
         <Route
           path="/register"
           element={

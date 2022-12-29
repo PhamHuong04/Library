@@ -57,6 +57,7 @@ const CartItem: React.FC<Props> = ({ product, quantity }) => {
               <input
                 type="text"
                 className="form-control"
+                style={{padding: "10px", width: "30px"}}
                 value={quantity}
                 readOnly
               />

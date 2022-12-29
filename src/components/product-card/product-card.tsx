@@ -1,12 +1,43 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Link } from "react-router-dom";
-import { useAppSelector } from "../../hooks/redux-hook";
+import Swal from "sweetalert2";
+import { toast } from "react-toastify";
+import { useAppDispatch, useAppSelector } from "../../hooks/redux-hook";
 import { selectCurrentUser } from "../../store/user/user";
 import { IBook } from "../../utils/interfaces";
-
+import axiosInstance from "../../service/config";
+import { getAllProduct } from "../../store/product";
 
 const ProductCardComponent: React.FC<IBook> = (product) => {
+  const dispatch = useAppDispatch();
+  useEffect(() => {
+    dispatch(getAllProduct());
+  }, [dispatch]);
   const currentUser = useAppSelector(selectCurrentUser);
+
+  const deleteBook = async (id: number) => {
+    try {
+      const res = await axiosInstance.delete(`book/${id}`);
+      return res.data;
+    } catch (err) {
+      throw new Error("Delete Book failed");
+    }
+  };
+  const onDeleteBook = (book: IBook) => {
+    Swal.fire({
+      title: "Are you sure?",
+      text: `Delete Book: '${book.title}'?`,
+      showCancelButton: true,
+      confirmButtonText: "Yes",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        toast.success("Xoá thành công!");
+        deleteBook(book.bookcode);
+      }
+    });
+      console.log(React.version);
+
+  };
   return (
     <div className="col-md-4">
       <figure className="card card-product-grid">
@@ -33,14 +64,20 @@ const ProductCardComponent: React.FC<IBook> = (product) => {
           {currentUser?.roles === "admin" && (
             <div className="admin">
               <div className="d-flex justify-content-between">
-                <button type="button" className="btn  btn-success">
-                  <span className="text">Edit</span>
-                  <i className="far fa-edit"></i>
-                </button>
-                <Link to={`/cart`} className={"btn btn-danger"}>
+                <Link to={`/update/${product.bookcode}`}>
+                  <button type="button" className="btn btn-success">
+                    <span className="text">Edit</span>
+                    <i className="far fa-edit"></i>
+                  </button>
+                </Link>
+                <button
+                  type="button"
+                  className="btn btn-danger"
+                  onClick={() => onDeleteBook(product)}
+                >
                   <span className="text">Delete</span>
                   <i className="fas fa-trash"></i>
-                </Link>
+                </button>
               </div>
             </div>
           )}

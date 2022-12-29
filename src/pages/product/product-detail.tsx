@@ -1,25 +1,88 @@
 import React, { useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
+import { Box, Button, Rating, TextField, Typography } from "@mui/material";
 import { useAppDispatch, useAppSelector } from "../../hooks/redux-hook";
 import { getProduct, selectProductDetail } from "../../store/product";
-import UserPng from "../../assets/images/avatars/avatar1.jpg";
 import "./product.style.css";
 import { addItemToCart } from "../../store/cart";
+import { selectCurrentUser } from "../../store/user/user";
+import authAxios from "../../service/authAxios";
+import { IComment } from "../../utils/interfaces/comment";
+import Comment from "../../components/comment/comment";
+import { getAllComment, selectCommnets } from "../../store/comment/comment";
 interface Props {}
 
 const ProductDetailPage: React.FC<Props> = () => {
   const params = useParams();
-
+  const { id } = useParams();
+  const [rate, setRate] = React.useState(0);
+  const [content, setContent] = React.useState<string>("");
+  const [disable, setDisable] = React.useState(true);
+  const [comments, setComments] = React.useState<IComment[]>([]);
   const dispatch = useAppDispatch();
 
   const product = useAppSelector(selectProductDetail);
+  const commentlist = useAppSelector(selectCommnets);
+
+  // eslint-disable-next-line array-callback-return
+  const commentFilter = commentlist.filter(function (comment) {
+    if (id) {
+      return comment.book.bookcode === parseInt(id);
+    }
+  });
+  const currentUser = useAppSelector(selectCurrentUser);
   const addToCart = () => {
     product && dispatch(addItemToCart({ product }));
   };
 
+  const onRateChange = (event: React.SyntheticEvent, value: number | null) => {
+    if (value) {
+      setRate(value);
+    }
+  };
+
+  const resetCommetInput = React.useCallback(() => {
+    setContent("");
+    setDisable(true);
+    setRate(0);
+  }, []);
+
+  const onChangeCommentContent = (
+    e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>
+  ) => {
+    const { value } = e.target;
+
+    if (value) {
+      setDisable(false);
+    } else {
+      setDisable(true);
+    }
+    setContent(value);
+  };
+
+  const handleAddComment = async () => {
+    try {
+      if (id) {
+        const idInt = parseInt(id);
+        const { data } = await authAxios.post("/comment", {
+          content,
+          rate,
+          bookcode: idInt,
+        });
+
+        setComments((preState) => [...preState, data]);
+        resetCommetInput();
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   useEffect(() => {
     if (params.id) {
+
       dispatch(getProduct(params.id));
+      dispatch(getAllComment());
     }
   }, [dispatch, params]);
 
@@ -44,6 +107,7 @@ const ProductDetailPage: React.FC<Props> = () => {
                   <var className="price h4">${product?.price}</var>
                 </div>
                 <p>{product?.description}</p>
+                {currentUser?.id && (
                   <div className="d-flex justify-content-between">
                     <button
                       onClick={addToCart}
@@ -58,43 +122,75 @@ const ProductDetailPage: React.FC<Props> = () => {
                       <i className="fas fa-eye"></i>
                     </Link>
                   </div>
+                )}
               </article>
             </main>
           </div>
         </div>
       </div>
       <br />
-      <div className="row">
-        <div className="col-md-8 offset-md-2">
-          <header className="section-heading">
-            <h3>Customer Reviews </h3>
-          </header>
-          <article className="box mb-3">
-            <div className="icontext w-100">
-              <img
-                src={UserPng}
-                alt=""
-                className="img-xs icon rounded-circle"
-              />
-              <div className="text">
-                <span className="date text-muted float-md-right">
-                  24.04.2020{" "}
-                </span>
-                <h6 className="mb-1">Mike John </h6>
-              </div>
-            </div>
-            <div className="mt-3">
-              <p>
-                {" "}
-                Dummy comment Lorem ipsum dolor sit amet, consectetur
-                adipisicing elit, sed do eiusmod tempor incididunt ut labore et
-                dolore magna aliqua. Ut enim ad minim veniam, quis nostrud
-                exercitation ullamco laboris nisi ut aliquip{" "}
-              </p>
-            </div>
-          </article>
+      <Box
+        sx={{ textAlign: "left", marginTop: 6 }}
+        className="col-md-8 offset-md-2"
+      >
+        {commentFilter.length ? (
+          <Typography
+            gutterBottom
+            variant="h4"
+            component="div"
+            sx={{ marginBottom: 2 }}
+          >
+            Customer Reviews
+          </Typography>
+        ) : null}
+
+        {commentFilter.map((comment) => {
+          return <Comment key={comment.id} comment={comment} />;
+        })}
+      </Box>
+      {currentUser?.id && (
+        <div className="row">
+          <div className="col-md-8 offset-md-2">
+            <article className="box mb-3">
+              <Typography gutterBottom variant="h6" component="div">
+                Add a comment
+              </Typography>
+              <Box component="form">
+                <Box sx={{ display: "flex", alignItems: "center" }}>
+                  <Typography variant="body1" component="div">
+                    Rate this Book ?
+                  </Typography>
+                  <Rating
+                    value={rate}
+                    sx={{ marginLeft: 3 }}
+                    onChange={onRateChange}
+                  />
+                </Box>
+                <TextField
+                  margin="normal"
+                  fullWidth
+                  id="add-comment"
+                  name="add-comment"
+                  multiline
+                  minRows={5}
+                  maxRows={10}
+                  placeholder="Write a comment..."
+                  value={content}
+                  onChange={onChangeCommentContent}
+                />
+                <Button
+                  variant="contained"
+                  sx={{ marginTop: "24px" }}
+                  disabled={disable}
+                  onClick={handleAddComment}
+                >
+                  Add my comment
+                </Button>
+              </Box>
+            </article>
+          </div>
         </div>
-      </div>
+      )}
     </section>
   );
 };

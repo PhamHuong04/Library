@@ -10,6 +10,7 @@ export const typeProductAction = {
   ADD_BOOK: "product/ADD_BOOK",
 };
 
+
 interface ProductState {
   products: IBook[];
   product: IBook | null;
@@ -26,6 +27,7 @@ export const getAllProduct = createAsyncThunk<
     return response.data;
   } catch (error) {}
 });
+
 
 export const getProduct = createAsyncThunk<IBook, string>(
   typeProductAction.GET_PRODUCT,
