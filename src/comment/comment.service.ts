@@ -25,6 +25,14 @@ export class CommentService {
     return await this.commentRepository.save(comment);
   }
 
+  async getAll() {
+    return await this.commentRepository.find({
+      relations: {
+        book: true,
+      },
+    });
+  }
+
   async findOneById(id: number) {
     return await this.commentRepository.findOne({
       where: { id },

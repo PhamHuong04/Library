@@ -37,11 +37,17 @@ export class BookService {
   ) {}
 
   async create(createBookDto: CreateBookDto) {
-    if (createBookDto.image_url) {
-      const imageUrl = await this.cloudinary.uploadImage( createBookDto.image_url);
-      createBookDto.image_url = imageUrl.url;
-    }
-    return await this.bookRepository.save(createBookDto);
+    const dto = createBookDto.imageId
+      ? {
+          ...createBookDto,
+          image: {
+            id: createBookDto.imageId,
+          },
+        }
+      : { ...createBookDto };
+    const book = await this.bookRepository.create(dto);
+
+    return await this.bookRepository.save(book);
   }
 
   findAll() {

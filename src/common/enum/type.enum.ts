@@ -9,6 +9,5 @@ export enum Catagory {
 
 export enum UserRole {
   ADMIN = 'admin',
-  READER = 'reader',
-  READ = 'read',
+  USER = 'USER',
 }

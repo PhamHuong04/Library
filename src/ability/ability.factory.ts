@@ -30,7 +30,7 @@ export class AbilityFactory {
     if (user.roles == 'admin') {
       can(Action.ADMIN, Book);
       can(Action.READER, UserEntity);
-    } else if (user.roles == 'reader') {
+    } else if (user.roles == 'USER') {
       cannot(Action.ADMIN, UserEntity).because(
         'You are not authorized to do this',
       );
